@@ -1,0 +1,90 @@
+const Pqrs = require('../../models/Pqrs');
+const PqrType = require('../../models/PqrsType');
+const Storages = require('../../models/Storage');
+const { transporter, mailDetails } = require('../../mailer/nodemailer');
+const TipesIdentity = require('../../models/TipesIdentity');
+
+
+
+const postPqr = async (req, res) => {
+  try {
+    const { name, lastName, identity, address, phone, email, description, typeId,typeDocument  } = req.body;
+    
+    if (!name || !lastName || !identity || !address || !phone || !email || !description || !typeId ||!typeDocument ) {
+      return res.status(400).send("Faltan datos");
+    }
+
+    const lastPqr = await Pqrs.findOne({
+      order: [['createdAt', 'DESC']]
+    });
+
+    let consecutive = "PQRSDF-CTC-" + new Date().getFullYear() + "-0001";
+
+    if (lastPqr) {
+      const lastConsecutive = lastPqr.consecutive;
+
+      const year = lastConsecutive.split('-')[2];
+      let lastNumber = parseInt(lastConsecutive.split('-')[3]);
+
+      if (year === new Date().getFullYear().toString()) {
+        lastNumber++;
+        consecutive = "PQRSDF-CTC-" + year + "-" + lastNumber.toString().padStart(4, '0');
+      }
+    }
+
+    const newPqr = await Pqrs.create({
+      name,
+      lastName,
+      identity,
+      phone,
+      address,
+      email,
+      description,
+      consecutive
+    });
+
+    const pqrType = await PqrType.findByPk(typeId);
+    if (pqrType) {
+      await newPqr.setPqrTypes([pqrType]);
+    }
+    const tipesIdentity = await TipesIdentity.findOne({
+      where: { tipeDocument: typeDocument }
+    });
+    console.log("Holaaa", tipesIdentity)
+    if (tipesIdentity) {
+      await newPqr.setTipesidentity(tipesIdentity); // Usa setTipesidentity en minúsculas
+  }
+  if (req.file) {
+    const { filename, path } = req.file;
+    // Crea un nuevo Storage para el archivo adjunto
+    const newStorage = await Storages.create({
+      url: path,
+      filename: filename
+    });
+    
+    // Asocia el nuevo Storage con la PQR creada
+    await newPqr.addStorage(newStorage);
+  }
+  const mailOptions = mailDetails(email,newPqr.name,newPqr.consecutive);
+    mailOptions.subject = ` Número de radicado: ${consecutive}`; // Asunto del correo con el número de radicado
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+        res.status(500).send('Error al enviar el correo electrónico');
+      } else {
+        console.log('Correo electrónico enviado: ' + info.response);
+        res.status(201).json(newPqr);
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Ha ocurrido un error al crear la PQR." });
+  }
+};
+
+
+
+
+  module.exports = {
+    postPqr
+  };

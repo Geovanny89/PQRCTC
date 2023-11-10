@@ -42,7 +42,7 @@ const allArea = async (req, res) => {
 
 const createArea = async (req, res) => {
     try {
-        const { name } = req.query;
+        const { name } = req.body;
         if (!name) {
             res.status(404).send("El campo no puede estar vacio");
             return
@@ -54,6 +54,7 @@ const createArea = async (req, res) => {
         res.status(500).json({ message: error.message })
     }
 }
+
 const updateArea = async (req, res) => {
     try {
         const { id } = req.params

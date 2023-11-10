@@ -3,6 +3,8 @@ const sequelize = require('../database/db');
 const PqrType = require('./PqrsType');
 const TipesIdentity = require('./TipesIdentity');
 const Storages = require('./Storage');
+const ResponseFile = require('./ResponseFile');
+
 
 
 
@@ -42,6 +44,10 @@ const Pqrs = sequelize.define('pqrs',{
 Pqrs.belongsToMany(PqrType, { through: 'pqrsfd' });
 Pqrs.belongsTo(TipesIdentity);
 Pqrs.hasMany(Storages);
+Pqrs.hasMany(ResponseFile);
+
+
+
 
 module.exports = Pqrs;
 

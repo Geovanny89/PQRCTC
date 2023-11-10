@@ -1,14 +1,15 @@
 const express = require('express');
 
-const {postUser, getUser, putUser, deleteUser, userId} = require('../../../controllers/admin/users.controller');
+const {postUser, getUser, putUser, deleteUser, userId, resetPassword} = require('../../../controllers/admin/users.controller');
 
 const router = express();
 
-router.get('/:id',userId)
+router.get('/user/:id',userId)
 router.post('/user',postUser)
 router.get('/users',getUser)
 router.put('/users/:id',putUser)
 router.delete('/users/:id',deleteUser)
+router.post('/newPassword', resetPassword)
 
 
 

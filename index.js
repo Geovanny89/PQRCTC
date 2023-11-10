@@ -9,11 +9,11 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-
-app.use('/api', require('./src/routes'))
+app.use(express.static("storage"))
+app.use(express.static('assets'));
 
 const PORT = process.env.PORT || 3000
+app.use('/api', require('./src/routes'))
 
 
 async function main() {

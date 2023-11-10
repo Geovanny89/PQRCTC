@@ -6,6 +6,7 @@ const storage = require('./User/RegisterPqrs/Storage/storage')
 const tipeidentity = require('./Admin/Typesidentity/TipeIdentity')
 const pqrsAdmin= require('./Admin/pqrs/Allpqrs')
 const areas = require('./Admin/Areas/Areas')
+const userspqrctc = require('./Users/users')
 
 const router = express();
 
@@ -16,6 +17,7 @@ router.use(storage)
 router.use(tipeidentity)
 router.use(pqrsAdmin)
 router.use(areas)
+router.use(userspqrctc)
 
 
 

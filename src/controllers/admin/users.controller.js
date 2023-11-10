@@ -101,5 +101,28 @@ const deleteUser = async(req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+const resetPassword = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
 
-module.exports = { postUser, getUser, putUser, deleteUser,userId}
+        if (!email || !newPassword) {
+            return res.status(400).send("Se requiere el correo electrónico y la nueva contraseña para restablecer la contraseña.");
+        }
+
+        const user = await Users.findOne({ where: { email } });
+
+        if (!user) {
+            return res.status(404).send("No se encontró ningún usuario con ese correo electrónico.");
+        }
+
+        // Actualizar la contraseña del usuario en la base de datos
+        user.password = newPassword;
+        await user.save();
+
+        res.status(200).send("Contraseña restablecida con éxito por el administrador.");
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+module.exports = { postUser, getUser, putUser, deleteUser,userId,resetPassword}

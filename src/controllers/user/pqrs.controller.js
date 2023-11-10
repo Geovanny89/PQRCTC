@@ -9,7 +9,7 @@ const TipesIdentity = require('../../models/TipesIdentity');
 const postPqr = async (req, res) => {
   try {
     const { name, lastName, identity, address, phone, email, description, typeId,typeDocument  } = req.body;
-    
+    console.log("cuerpo de la solicitud ", req.body)
     if (!name || !lastName || !identity || !address || !phone || !email || !description || !typeId ||!typeDocument ) {
       return res.status(400).send("Faltan datos");
     }
@@ -50,7 +50,7 @@ const postPqr = async (req, res) => {
     const tipesIdentity = await TipesIdentity.findOne({
       where: { tipeDocument: typeDocument }
     });
-    console.log("Holaaa", tipesIdentity)
+
     if (tipesIdentity) {
       await newPqr.setTipesidentity(tipesIdentity); // Usa setTipesidentity en minúsculas
   }
@@ -65,6 +65,7 @@ const postPqr = async (req, res) => {
     // Asocia el nuevo Storage con la PQR creada
     await newPqr.addStorage(newStorage);
   }
+  
   const mailOptions = mailDetails(email,newPqr.name,newPqr.consecutive);
     mailOptions.subject = ` Número de radicado: ${consecutive}`; // Asunto del correo con el número de radicado
     transporter.sendMail(mailOptions, function (error, info) {
@@ -73,6 +74,20 @@ const postPqr = async (req, res) => {
         res.status(500).send('Error al enviar el correo electrónico');
       } else {
         console.log('Correo electrónico enviado: ' + info.response);
+        const notificationOptions = {
+          from: 'pruebadesarrollo2184@gmail.com',
+          to: 'itecnologica@ctc.edu.co',  // Reemplaza con la dirección de correo deseada
+          subject: 'Nueva PQR creada',
+          text: `Se ha creado una nueva PQR con el número de radicado: ${newPqr.consecutive}`,
+        };
+        transporter.sendMail(notificationOptions, function (notificationError, notificationInfo) {
+          if (notificationError) {
+            console.log(notificationError);
+            // Maneja cualquier error al enviar la notificación
+          } else {
+            console.log('Notificación enviada: ' + notificationInfo.response);
+          }
+        });
         res.status(201).json(newPqr);
       }
     })

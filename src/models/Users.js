@@ -31,4 +31,5 @@ const Users = sequelize.define('users', {
 })
 
 Users.belongsTo(Area);
+
 module.exports = Users;

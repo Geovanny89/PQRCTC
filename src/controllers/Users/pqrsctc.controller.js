@@ -24,7 +24,7 @@ const allPqrsCtc = async (req, res) => {
         ],
         attributes: { exclude: ['typeid'] }
       });
-      console.log("SOY LA SOLICITUD ", allpqrs)
+     
   
       if (!allpqrs || allpqrs.length === 0) {
         return res.status(404).send("No existen PQRS registradas.");
@@ -81,9 +81,12 @@ const allPqrsCtc = async (req, res) => {
         where: { tipeDocument: typeDocument }
       });
   
-      if (tipesIdentity) {
-        await newPqr.setTipesidentity(tipesIdentity); // Usa setTipesidentity en minúsculas
+      if (!tipesIdentity) {
+        // Si no se encuentra el tipo de documento, envía una respuesta de error
+        return res.status(400).send("Tipo de documento no válido");
+      
     }
+    await newPqr.setTipesidentity(tipesIdentity);
     if (req.file) {
       const { filename, path } = req.file;
       // Crea un nuevo Storage para el archivo adjunto
@@ -104,6 +107,20 @@ const allPqrsCtc = async (req, res) => {
           res.status(500).send('Error al enviar el correo electrónico');
         } else {
           console.log('Correo electrónico enviado: ' + info.response);
+          const notificationOptions = {
+            from: 'notificaciones@ctc.edu.co',
+            to: 'notificaciones@ctc.edu.co',  // Reemplaza con la dirección de correo deseada
+            subject: 'Nueva PQR creada',
+            text: `Se ha creado una nueva PQR con el número de radicado: ${newPqr.consecutive}`,
+          };
+          transporter.sendMail(notificationOptions, function (notificationError, notificationInfo) {
+            if (notificationError) {
+              console.log(notificationError);
+              // Maneja cualquier error al enviar la notificación
+            } else {
+              console.log('Notificación enviada: ' + notificationInfo.response);
+            }
+          });
           res.status(201).json(newPqr);
         }
       })

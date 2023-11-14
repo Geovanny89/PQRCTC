@@ -7,6 +7,7 @@ const tipeidentity = require('./Admin/Typesidentity/TipeIdentity')
 const pqrsAdmin= require('./Admin/pqrs/Allpqrs')
 const areas = require('./Admin/Areas/Areas')
 const userspqrctc = require('./Users/users')
+const register = require('./Auth/auth')
 
 const router = express();
 
@@ -18,6 +19,7 @@ router.use(tipeidentity)
 router.use(pqrsAdmin)
 router.use(areas)
 router.use(userspqrctc)
+router.use(register)
 
 
 

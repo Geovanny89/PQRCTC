@@ -7,7 +7,7 @@ module.exports = {
     transporter: nodemailer.createTransport({
         service: 'gmail',                                               //Se escribe el servicio de correo
         auth: {
-            user: 'pruebadesarrollo2184@gmail.com',                            //Correo de la empresa
+            user: 'notificaciones@ctc.edu.co',                            //Correo de la empresa
             pass: NODEMAILER,                                           //Contraseña del correo
         },
     }),
@@ -16,7 +16,7 @@ module.exports = {
     mailDetails: (email, name, consecutive) => {                                           //^Mail de bienvenida para el cliente
         const currentDate = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         return {
-            from: 'pruebadesarrollo2184@gmail.com',                            //Correo de la empresa
+            from: 'notificaciones@ctc.edu.co',                            //Correo de la empresa
             to: email,                                                  //Email del usuario
             subject: `¡Bienvenido al centro Técnologico de Cúcuta!`,                  //Asunto del corre
             html: `

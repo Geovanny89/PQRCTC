@@ -75,8 +75,8 @@ const postPqr = async (req, res) => {
       } else {
         console.log('Correo electrónico enviado: ' + info.response);
         const notificationOptions = {
-          from: 'pruebadesarrollo2184@gmail.com',
-          to: 'itecnologica@ctc.edu.co',  // Reemplaza con la dirección de correo deseada
+          from: 'notificaciones@ctc.edu.co',
+          to: 'notificaciones@ctc.edu.co',  // Reemplaza con la dirección de correo deseada
           subject: 'Nueva PQR creada',
           text: `Se ha creado una nueva PQR con el número de radicado: ${newPqr.consecutive}`,
         };

@@ -1,5 +1,6 @@
-const Area = require('../../models/Area');
-const Users = require('../../models/Users')
+// const Area = require('../../models/Area');
+const Users = require('../../models/Users');
+const { encrypt } = require('../../utils/handlePassword');
 
 const userId = async(req,res )=> {
     try {
@@ -32,34 +33,42 @@ const getUser = async (req, res) => {
 };
 
 
-// const postUser = async (req, res) => {
-//     try {
-//         const { name, lastName, userName, email, password,areaId } = req.body;
-//         if (!name || !lastName || !userName || !email || !password || !areaId) {
-//             res.status(400).send("Faltan datos")
-//             return
-//         }
-//         const area = await Area.findByPk(areaId);
-
-//         if (!area) {
-//             res.status(404).send("El área proporcionada no existe.");
-//             return;
-//         }
-//         const newUser = await Users.create({
-//             name,
-//             lastName,
-//             userName,
-//             email,
-//             password,
-//             areaId
-//         })
+const postUser = async (req, res) => {
+    try {
+        const { name, lastName, userName, email, password } = req.body;
         
-//         res.status(200).json(newUser)
-//     } catch (error) {
-//         console.log(error)
-//         res.status(500).json({ message: error.message })
-//     }
-// }
+        const existingUser = await Users.findOne({
+            where: { email },
+        });
+
+        if (existingUser) {
+            // Si el correo ya existe, envía una respuesta indicando que no es posible registrar el correo
+            return res.status(400).json({ error: 'El correo electrónico ya está registrado' });
+        }
+        // Verifica si el usuario que realiza la solicitud es un administrador
+        if (req.user && req.user.role === 'admin') {
+            // Si es un administrador, encripta la contraseña
+            const encryptedPassword = await encrypt(password);
+
+            // Crea el nuevo usuario con la contraseña encriptada
+            const newUser = await Users.create({
+                name,
+                lastName,
+                userName,
+                email,
+                password: encryptedPassword,
+            });
+
+            res.status(200).json(newUser);
+        } else {
+            // Si no es un administrador, envía un mensaje de error
+            res.status(403).json({ message: 'No tienes permisos para realizar esta acción.' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.message });
+    }
+}
 const putUser = async (req, res) => {
     const { id } = req.params; // Obtén el ID del usuario de la URL
     const { name, lastName, userName, email, password } = req.body; // Datos que pueden ser actualizados
@@ -116,7 +125,8 @@ const resetPassword = async (req, res) => {
         }
 
         // Actualizar la contraseña del usuario en la base de datos
-        user.password = newPassword;
+        const encryptedPassword = await encrypt(newPassword);
+        user.password = encryptedPassword;
         await user.save();
 
         res.status(200).send("Contraseña restablecida con éxito por el administrador.");
@@ -125,4 +135,4 @@ const resetPassword = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-module.exports = {  getUser, putUser, deleteUser,userId,resetPassword}
+module.exports = {  getUser,postUser, putUser, deleteUser,userId,resetPassword}

@@ -21,13 +21,25 @@ const postTypePqr = async (req, res) => {
             res.status(404).send("los campos no pueden estar vacios")
             return
         }
+        const existingType = await PqrsType.findOne({
+            where: { name }
+        });
+
+        if (existingType) {
+            res.status(409).send("El tipo ya existe"); // Código 409 para indicar conflicto
+            return;
+        }
         const type= await PqrsType.create({
             name
         })
         res.status(200).json(type)
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: error.message });        
+        console.log(error);
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            res.status(409).send("El tipo ya existe"); // Código 409 para indicar conflicto
+        } else {
+            res.status(500).json({ message: error.message });
+        }  
     }
 }
 

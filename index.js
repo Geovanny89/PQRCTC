@@ -1,5 +1,5 @@
 const express = require('express');
-const  sequelize  = require('./database/db');
+const  sequelize  = require('./src/database/db');
 const { JWT_SECRET}= process.env
 const cors = require('cors');
 const bodyParser= require('body-parser')
@@ -38,7 +38,7 @@ app.use(express.static("storage"))
 app.use(express.static('assets'));
 
 const PORT = process.env.PORT || 3001
-app.use('/api', require('./routes'))
+app.use('/api', require('./src/routes'))
 
 
 async function main() {

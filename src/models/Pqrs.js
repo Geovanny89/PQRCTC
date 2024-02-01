@@ -19,7 +19,7 @@ const Pqrs = sequelize.define('pqrs',{
         type:DataTypes.INTEGER
     },
     phone:{
-        type:DataTypes.INTEGER
+        type:DataTypes.STRING
     },
     email:{
         type:DataTypes.STRING
@@ -42,7 +42,7 @@ const Pqrs = sequelize.define('pqrs',{
     
 })
 Pqrs.belongsToMany(PqrType, { through: 'pqrsfd' });
-Pqrs.belongsTo(TipesIdentity);
+Pqrs.belongsTo(TipesIdentity, { foreignKey: 'typeDocument' });
 Pqrs.hasMany(Storages);
 Pqrs.hasMany(ResponseFile);
 

@@ -6,7 +6,7 @@ const checkRol = require('../../../middleware/rol')
 const router = express()
 
 router.post('/typePqr',authMiddleware,checkRol(["admin"]), postTypePqr)
-router.get('/types',authMiddleware,checkRol(["admin"]), getTypePqrs)
+router.get('/types', getTypePqrs)
 router.put('/types/:id',authMiddleware,checkRol(["admin"]),updatePqrsType)
 router.delete('/typesDelete/:id',authMiddleware,checkRol(["admin"]),deleteType)
 

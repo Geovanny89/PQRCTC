@@ -1,5 +1,5 @@
 const express = require('express');
-const  sequelize  = require('./src/database/db');
+const  sequelize  = require('./database/db');
 const { JWT_SECRET}= process.env
 const cors = require('cors');
 const bodyParser= require('body-parser')
@@ -23,8 +23,7 @@ app.use(
 );
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", '*');
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header(
+  res.header("Access-Control-Allow-Credentials", "true"); res.header(
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
   );
@@ -38,7 +37,7 @@ app.use(express.static("storage"))
 app.use(express.static('assets'));
 
 const PORT = process.env.PORT || 3001
-app.use('/api', require('./src/routes'))
+app.use('/api', require('./routes'))
 
 
 async function main() {
